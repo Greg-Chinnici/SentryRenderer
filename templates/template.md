@@ -1,0 +1,6 @@
+## Link
+{{ permalink }}
+
+## Dump
+
+{{ Dump }}

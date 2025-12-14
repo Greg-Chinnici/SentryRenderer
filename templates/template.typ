@@ -3,3 +3,6 @@
 
 
 #block[#repr(data)]
+
+permalink 
+#text(data.permalink)
