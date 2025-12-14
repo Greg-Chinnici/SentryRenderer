@@ -6,7 +6,7 @@ import logging
 import json
 import subprocess
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO ,filename="DocumentMaker.log" , filemode="w")
 
 class WorkingDirectory:
     def __init__(self, keep_on_error=True , copy_out_to_dir: Path | None = None):
@@ -70,7 +70,7 @@ def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
             
             
             with open(md, 'r') as f:
-                logging.info("Generated Markdown Report:\n" + f.read())
+                logging.info("Generated Markdown Report:" + f.read().replace('\n', '    '))
             
             with open(typst, 'rb') as f:
                 logging.info(f"Generated Typst Report: {typst} ({len(f.read())} bytes)")
@@ -79,10 +79,16 @@ def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
                 workdir.copy_out_to_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copy(md, workdir.copy_out_to_dir / 'report.md')
                 shutil.copy(typst, workdir.copy_out_to_dir / 'report.pdf')
-            
+
+                return {
+                    "markdown": workdir.copy_out_to_dir / 'report.md',
+                    "typst": workdir.copy_out_to_dir / 'report.pdf'
+                    }
+            return None
+        
         except Exception as e:
             print(e.with_traceback(e.__getattribute__('__traceback__')))
-
+    
 def CreateMarkdown(WorkDir: WorkingDirectory):
     report = WorkDir.generated / 'report.md'
     output_file = WorkDir.output / 'report.md'
