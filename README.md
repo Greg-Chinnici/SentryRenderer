@@ -4,3 +4,7 @@
 2. converts those events into readble docs
 3. optionally send them via email
 4. upload them to a discord api
+
+## Example Outputs
+1. [Markdown Export](Resources/report.md)
+2. [Typst Export](Resources/report.pdf)
