@@ -1,9 +1,12 @@
 from documentMaker import CreateDocuments
 from pathlib import Path
-
+import sys
 import logging
-logging.basicConfig(level=logging.INFO ,filename="DocumentMaker.log" , filemode="w")
-
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[logging.FileHandler("DocumentMaker.log" , mode="a"), logging.StreamHandler(sys.stdout)], 
+    force=True,
+)
 
 data = {
     "hello": "world",
@@ -12,13 +15,21 @@ data = {
     "another_dict" : {
         "nested_key": "nested_value",
         "nested_number": 100
-    }
+    },
+    "permalink": "https://google.com", 
 }
+
 
 createdPaths = CreateDocuments(data , output_dir=Path.cwd() / 'exported')
 if createdPaths is not None:
-    for path in createdPaths:
-        logging.info(f"Created file at: {Path(path).resolve()}")
+    for type , path in createdPaths.items():
+        match type:
+            case "markdown":
+                logging.info(f"Created Markdown file at: {Path(path).resolve()}")
+            case "typst":
+                logging.info(f"Created Typst PDF file at: {Path(path).resolve()}")
+            case _:
+                logging.error(f"Unknown file type: {type} at path: {Path(path).resolve()}")
 
     # now out of temp scope
     # can send out to emails , curl or other services
