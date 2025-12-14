@@ -34,7 +34,8 @@ class WorkingDirectory:
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        return True
+        logging.info(f"Cleaning up working directory: {self.path}")
+        
         if exc_type is None:
             shutil.rmtree(self.path)
             return False
@@ -47,8 +48,8 @@ class WorkingDirectory:
         return False
 
 
-def CreateDocuments(CleanedSentry: dict):
-    with WorkingDirectory(keep_on_error=True , copy_out_to_dir=Path.cwd() / 'exported') as workdir:
+def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
+    with WorkingDirectory(keep_on_error=True , copy_out_to_dir=output_dir) as workdir:
         try: 
             data = workdir.path / 'data'
             generated = workdir.path / 'generated'

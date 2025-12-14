@@ -1,4 +1,6 @@
 from documentMaker import CreateDocuments
+from pathlib import Path
+
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -13,4 +15,4 @@ data = {
     }
 }
 
-CreateDocuments(data)
+CreateDocuments(data , output_dir=Path.cwd() / 'exported')
