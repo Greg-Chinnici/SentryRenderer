@@ -85,8 +85,9 @@ def CreateDocuments(CleanedSentry: dict):
 def CreateMarkdown(WorkDir: WorkingDirectory):
     report = WorkDir.generated / 'report.md'
     output_file = WorkDir.output / 'report.md'
-    with open(WorkDir.MarkdownTemplate.as_posix(), 'r') as source , open(report, 'w') as dest:
-        dest.write(source.read())
+    
+    shutil.copy(WorkDir.MarkdownTemplate.as_posix() , report.as_posix())
+    
     
     sentry_data = json.load(open(WorkDir.data / 'sentry.json', 'r'))
     with open (report , 'a') as file:
@@ -104,11 +105,8 @@ def CreateMarkdown(WorkDir: WorkingDirectory):
 def CreateTypst(WorkDir: WorkingDirectory):
     typst_file = WorkDir.generated / 'report.typ'
     output_file = WorkDir.output / 'report.pdf'
-    with open(WorkDir.TypstTemplate.as_posix(), 'r') as source , open(typst_file, 'w') as dest:
-        dest.write(source.read())
-    
-    with open(WorkDir.data / 'sentry.json', 'r') as source , open(WorkDir.generated / 'sentry.json', 'w') as dest:
-        dest.write(source.read())   
+    shutil.copy(WorkDir.TypstTemplate.as_posix(), typst_file.as_posix())
+    shutil.copy(WorkDir.data / 'sentry.json', WorkDir.generated / 'sentry.json')
              
     cmd = ["typst", "compile", typst_file.as_posix() , output_file.as_posix()]
     subprocess.run(cmd, check=True)
