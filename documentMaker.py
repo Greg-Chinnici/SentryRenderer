@@ -88,7 +88,16 @@ def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
         
         except Exception as e:
             print(e.with_traceback(e.__getattribute__('__traceback__')))
+
+def tryReplaceJinjaVarible(file , var_name , var_value):
+    with open(file, 'r') as f:
+        content = f.read()
+        
+    content = content.replace(f"{{{{ {var_name} }}}}" , str(var_value))
     
+    with open(file, 'w') as f:
+        f.write(content)
+        
 def CreateMarkdown(WorkDir: WorkingDirectory):
     report = WorkDir.generated / 'report.md'
     output_file = WorkDir.output / 'report.md'
@@ -97,14 +106,14 @@ def CreateMarkdown(WorkDir: WorkingDirectory):
     
     
     sentry_data = json.load(open(WorkDir.data / 'sentry.json', 'r'))
-    with open (report , 'a') as file:
-        # replace the jinja style variables with sentry data
-        #TODO put the jinja templates in the template file
-        
-        file.write("hello markdown report\n")
-        file.write("```json\n")
-        file.write(json.dumps(sentry_data , indent=4))
-        file.write("\n```\n")
+    dumpString = "hello markdown report\n```json\n"
+    dumpString += json.dumps(sentry_data , indent=4)
+    dumpString += "\n```\n"
+    
+    for key, value in sentry_data.items():
+        tryReplaceJinjaVarible(report , key , value)
+    tryReplaceJinjaVarible(report , "Dump" , dumpString)
+    
     shutil.copy(report, output_file)
     
     return output_file
