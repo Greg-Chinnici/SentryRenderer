@@ -63,7 +63,7 @@ def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
             workdir.generated = generated
             workdir.output = output
             
-            json.dump(CleanedSentry , open(data / 'sentry.json', 'w'))
+            json.dump(CleanedSentry , open(workdir.data / 'sentry.json', 'w'))
             
             md = CreateMarkdown(workdir)
             typst = CreateTypst(workdir)
@@ -83,11 +83,12 @@ def CreateDocuments(CleanedSentry: dict , output_dir: Path = None):
                 return {
                     "markdown": workdir.copy_out_to_dir / 'report.md',
                     "typst": workdir.copy_out_to_dir / 'report.pdf'
+                    # maybe add a metadata json too
                     }
             return None
         
         except Exception as e:
-            print(e.with_traceback(e.__getattribute__('__traceback__')))
+            logging.error(e.with_traceback(e.__getattribute__('__traceback__')))
 
 def tryReplaceJinjaVarible(file , var_name , var_value):
     with open(file, 'r') as f:
