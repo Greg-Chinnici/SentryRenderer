@@ -19,8 +19,11 @@ data = {
     "permalink": "https://google.com", 
 }
 
+from DocumentUploader import S3Client
 
-createdPaths = CreateDocuments(data , output_dir=Path.cwd() / 'exported')
+S3Client = S3Client(".env")
+
+createdPaths = CreateDocuments(data , output_dir=Path.cwd() / 'Resources')
 if createdPaths is not None:
     for type , path in createdPaths.items():
         match type:
@@ -28,9 +31,14 @@ if createdPaths is not None:
                 logging.info(f"Created Markdown file at: {Path(path).resolve()}")
             case "typst":
                 logging.info(f"Created Typst PDF file at: {Path(path).resolve()}")
+            case "json":
+                logging.info(f"Created metadata JSON file at: {Path(path).resolve()}")
             case _:
                 logging.error(f"Unknown file type: {type} at path: {Path(path).resolve()}")
-
+      
+        url = S3Client.Upload(path)
+        print(f"File uploaded to Cloudflare at URL: {url}")
+        
     # now out of temp scope
     # can send out to emails , curl or other services
     # then delete the files
